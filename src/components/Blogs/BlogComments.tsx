@@ -109,7 +109,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
   };
 
   return (
-    <div className="glass rounded-lg border border-white/10 p-4 backdrop-blur-md sm:rounded-2xl sm:p-6 md:rounded-[2.5rem] md:p-10">
+    <div className="glass rounded-lg border border-white/10 p-4 backdrop-blur-md transition-[transform,border-color,box-shadow] duration-700 ease-out hover:-translate-y-0.5 hover:border-blue-400/20 hover:shadow-[0_16px_48px_-32px_rgba(37,99,235,0.35)] motion-reduce:transition-none sm:rounded-2xl sm:p-6 md:rounded-[2.5rem] md:p-10">
       <div className="mb-3 flex items-center justify-between sm:mb-4 md:mb-8">
         <h4 className="flex items-center gap-2 text-[8px] font-black tracking-widest text-gray-500 uppercase sm:gap-3 sm:text-[9px] md:gap-3 md:text-[10px]">
           💬 Comments ({comments.length})
@@ -161,7 +161,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
             return (
               <div
                 key={c.id}
-                className="flex gap-2 rounded border border-white/5 bg-black/20 p-2 sm:gap-3 sm:rounded-lg sm:p-3 md:gap-4 md:rounded-2xl md:p-5"
+                className="flex gap-2 rounded border border-white/5 bg-black/20 p-2 transition-[border-color,background-color] duration-700 ease-out hover:border-blue-400/15 hover:bg-white/4 sm:gap-3 sm:rounded-lg sm:p-3 md:gap-4 md:rounded-2xl md:p-5"
               >
                 <div className="relative size-6 shrink-0 overflow-hidden rounded-full sm:size-8 md:size-10">
                   <Image

@@ -6,12 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Build an SEO-friendly blog URL from a title: `/blog/my-blog-title`
+ * Build a URL-safe blog slug from a title, e.g. `my-blog-title`.
  */
 export function blogSlug(title: string): string {
-  const slug = title
+  return title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
-  return `/blog/${slug}`;
 }

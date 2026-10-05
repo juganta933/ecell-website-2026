@@ -404,7 +404,7 @@ function BlogGrid({
         const blogLink =
           variant === "provisional"
             ? `/blog/draft/${blog.id}`
-            : blogSlug(blog.title ?? "");
+            : `/blog/${blogSlug(blog.title ?? "")}`;
 
         return (
           <div

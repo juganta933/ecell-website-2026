@@ -6,6 +6,7 @@ import api from "@/lib/api";
 
 interface BlogEngagementProps {
   blogId: string;
+  shareUrl: string;
   isLoggedIn?: boolean;
   initialLiked?: boolean;
   likesCount?: number;
@@ -13,6 +14,7 @@ interface BlogEngagementProps {
 
 export default function BlogEngagement({
   blogId,
+  shareUrl,
   isLoggedIn = false,
   initialLiked = false,
   likesCount: initialLikesCount = 0,
@@ -41,13 +43,13 @@ export default function BlogEngagement({
       navigator
         .share({
           title: document.title,
-          url: window.location.href,
+          url: shareUrl,
         })
         .catch(() => {
           // User cancelled share
         });
     }
-  }, []);
+  }, [shareUrl]);
 
   return (
     <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-white/5 pt-6 sm:gap-6 sm:pt-8 md:mt-12 md:flex-row md:items-center md:gap-8 md:pt-12">
@@ -107,7 +109,7 @@ export default function BlogEngagement({
       {/* Social buttons */}
       <div className="flex gap-2 sm:gap-3">
         <a
-          href={`https://twitter.com/intent/tweet?url=${typeof window !== "undefined" ? encodeURIComponent(window.location.href) : ""}`}
+          href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="glass flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-gray-500 transition-all hover:border-blue-500/20 hover:text-white sm:h-10 sm:w-10 sm:rounded-xl md:h-12 md:w-12 md:rounded-2xl"
@@ -128,7 +130,7 @@ export default function BlogEngagement({
           </svg>
         </a>
         <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${typeof window !== "undefined" ? encodeURIComponent(window.location.href) : ""}`}
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="glass flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-gray-500 transition-all hover:border-blue-500/20 hover:text-white sm:h-10 sm:w-10 sm:rounded-xl md:h-12 md:w-12 md:rounded-2xl"
@@ -151,7 +153,7 @@ export default function BlogEngagement({
           </svg>
         </a>
         <a
-          href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== "undefined" ? encodeURIComponent(window.location.href) : ""}`}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="glass flex h-9 w-9 items-center justify-center rounded-lg border border-white/5 text-gray-500 transition-all hover:border-blue-500/20 hover:text-white sm:h-10 sm:w-10 sm:rounded-xl md:h-12 md:w-12 md:rounded-2xl"

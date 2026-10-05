@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Navbar from "../../components/Landing/Navbar";
+import Background from "../../components/Landing/Background";
 import BlogsClient from "../../components/Blogs/BlogsClient";
 
 const Footer = dynamic(() => import("../../components/Landing/Footer"), {
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="relative min-h-screen bg-[#020617] text-white">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#020617] font-sans text-white selection:bg-blue-500/30">
+      <Background />
       <Navbar />
       <BlogsClient />
       <Footer />

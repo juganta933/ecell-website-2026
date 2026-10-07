@@ -3,9 +3,9 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-import BlogEngagement from "../../../components/Blogs/BlogEngagement";
+import BlogEngagement from "./BlogEngagement";
 
-import BlogComments from "../../../components/Blogs/BlogComments";
+import BlogComments from "./BlogComments";
 
 import { useAuth } from "@/context/AuthContext";
 import { blogSlug } from "@/lib/utils";
@@ -29,9 +29,18 @@ export default function BlogDetailClient({ blog }: { blog: Blog }) {
   const { user } = useAuth();
 
   const formattedDate = (() => {
-    const [day, month, year] = blog.date.split("-").map(Number);
+    const normalized = blog.date.trim().replace(/\//g, "-");
+    const match = /^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(normalized);
 
-    return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    const parsedDate = match
+      ? new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]))
+      : new Date(normalized);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "Recently";
+    }
+
+    return parsedDate.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -227,7 +236,7 @@ export default function BlogDetailClient({ blog }: { blog: Blog }) {
 
                 <BlogEngagement
                   blogId={blog.id}
-                  shareUrl={`https://ecellnits.org/blog2/${blogSlug(blog.title)}`}
+                  shareUrl={`https://ecellnits.org/blog/${blogSlug(blog.title)}`}
                   isLoggedIn={!!user}
                   initialLiked={false}
                   likesCount={blog.likes}
@@ -241,41 +250,39 @@ export default function BlogDetailClient({ blog }: { blog: Blog }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.16, ease: "easeOut" }}
-              className="lg:sticky lg:top-32"
+              className="space-y-4 sm:space-y-6 md:space-y-8 lg:self-stretch"
             >
-              <div className="space-y-4 sm:space-y-6 md:space-y-8">
-                {/* Author Card */}
-                <div className="glass rounded-2xl border border-white/8 bg-white/4 p-5 backdrop-blur-md transition-[transform,border-color,box-shadow] duration-700 ease-out hover:-translate-y-0.5 hover:border-blue-400/20 hover:shadow-[0_16px_48px_-32px_rgba(37,99,235,0.35)] motion-reduce:transition-none sm:rounded-3xl sm:p-6 md:p-8">
-                  <h4 className="mb-4 text-[9px] font-bold tracking-[0.2em] text-slate-400 uppercase sm:text-[10px] md:mb-6">
-                    About Author
-                  </h4>
+              {/* Author Card */}
+              <div className="glass rounded-2xl border border-white/8 bg-white/4 p-5 backdrop-blur-md transition-[transform,border-color,box-shadow] duration-700 ease-out hover:-translate-y-0.5 hover:border-blue-400/20 hover:shadow-[0_16px_48px_-32px_rgba(37,99,235,0.35)] motion-reduce:transition-none sm:rounded-3xl sm:p-6 md:p-8">
+                <h4 className="mb-4 text-[9px] font-bold tracking-[0.2em] text-slate-400 uppercase sm:text-[10px] md:mb-6">
+                  About Author
+                </h4>
 
-                  <div className="flex items-center gap-4">
-                    <Image
-                      className="h-12 w-12 rounded-lg object-cover sm:h-14 sm:w-14 sm:rounded-xl md:h-20 md:w-20 md:rounded-2xl"
-                      src={authorAvatar}
-                      alt="author"
-                      width={80}
-                      height={80}
-                      loading="lazy"
-                      placeholder="empty"
-                    />
+                <div className="flex items-center gap-4">
+                  <Image
+                    className="h-12 w-12 rounded-lg object-cover sm:h-14 sm:w-14 sm:rounded-xl md:h-20 md:w-20 md:rounded-2xl"
+                    src={authorAvatar}
+                    alt="author"
+                    width={80}
+                    height={80}
+                    loading="lazy"
+                    placeholder="empty"
+                  />
 
-                    <div>
-                      <h5 className="text-xs font-bold text-white sm:text-sm md:text-lg">
-                        {blog.author}
-                      </h5>
+                  <div>
+                    <h5 className="text-xs font-bold text-white sm:text-sm md:text-lg">
+                      {blog.author}
+                    </h5>
 
-                      <p className="text-[7px] font-black tracking-widest text-blue-400 uppercase sm:text-[8px] md:text-[10px]">
-                        {blog.role}
-                      </p>
-                    </div>
+                    <p className="text-[7px] font-black tracking-widest text-blue-400 uppercase sm:text-[8px] md:text-[10px]">
+                      {blog.role}
+                    </p>
                   </div>
                 </div>
-
-                {/* Comments Section */}
-                <BlogComments blogId={blog.id} />
               </div>
+
+              {/* Comments Section */}
+              <BlogComments blogId={blog.id} />
             </motion.div>
           </div>
         </div>

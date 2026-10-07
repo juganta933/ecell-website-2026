@@ -46,6 +46,13 @@ This is the **official website** of **E-Cell NIT Silchar** — a non-profit, stu
 
 Built from the ground up using the latest web technologies, the website features a modern, animated dark-themed UI, content management capabilities, event-specific microsites, secure authentication, and an admin dashboard — all optimized for performance and search engine visibility.
 
+### Recent blog refinements
+
+- The blog cards now behave as a single clickable area that routes to the article detail page while keeping the like action independent.
+- The original blog route (`/blog/[id]`) now loads the article directly instead of redirecting to the legacy `/blog2` route.
+- The sidebar comment section stays sticky on larger screens for a better reading experience.
+- The blog sorting logic now parses dates more reliably across common day-month-year formats.
+
 ---
 
 ## ✨ Key Features

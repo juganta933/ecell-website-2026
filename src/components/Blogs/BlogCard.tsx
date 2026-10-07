@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import api from "@/lib/api";
@@ -35,6 +35,7 @@ export default function BlogCard({
   initialLiked = false,
   animationDelayMs = 0,
 }: BlogCardProps) {
+  const router = useRouter();
   const [liked, setLiked] = useState(initialLiked);
   const [likesCount, setLikesCount] = useState(blog.likes ?? 0);
 
@@ -44,25 +45,48 @@ export default function BlogCard({
   //   return Math.max(1, Math.ceil(words / 200));
   // }, [blog.fullContent, blog.description]);
 
-  const handleLike = useCallback(async () => {
-    if (!isLoggedIn) {
-      toast("Please log in to like a blog", { icon: "🔒" });
-      return;
-    }
-    try {
-      const { data } = await api.post<{ liked: boolean; likesCount: number }>(
-        `/api/blog/toggleLike/${blog.id}`,
-      );
-      setLiked(data.liked);
-      setLikesCount(data.likesCount);
-    } catch {
-      toast.error("Failed to update like");
-    }
-  }, [blog.id, isLoggedIn]);
+  const handleLike = useCallback(
+    async (event?: React.MouseEvent<HTMLButtonElement>) => {
+      event?.stopPropagation();
+
+      if (!isLoggedIn) {
+        toast("Please log in to like a blog", { icon: "🔒" });
+        return;
+      }
+      try {
+        const { data } = await api.post<{ liked: boolean; likesCount: number }>(
+          `/api/blog/toggleLike/${blog.id}`,
+        );
+        setLiked(data.liked);
+        setLikesCount(data.likesCount);
+      } catch {
+        toast.error("Failed to update like");
+      }
+    },
+    [blog.id, isLoggedIn],
+  );
+
+  const handleCardClick = useCallback(() => {
+    router.push(`/blog/${blogSlug(blog.title)}`);
+  }, [blog.title, router]);
+
+  const handleCardKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleCardClick();
+      }
+    },
+    [handleCardClick],
+  );
 
   return (
     <div
-      className="group relative h-full animate-[fadeInUp_0.55s_ease-out_both] motion-reduce:animate-none motion-reduce:opacity-100"
+      role="link"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      className="group relative h-full animate-[fadeInUp_0.55s_ease-out_both] cursor-pointer motion-reduce:animate-none motion-reduce:opacity-100"
       style={{ animationDelay: `${animationDelayMs}ms` }}
     >
       <div className="absolute inset-2 rounded-[1.75rem] bg-blue-500/8 opacity-0 blur-2xl transition-opacity duration-700 ease-in-out group-hover:opacity-100" />
@@ -136,6 +160,7 @@ export default function BlogCard({
             <div className="flex min-w-0 items-center gap-4 sm:gap-5">
               {/* Like button */}
               <button
+                type="button"
                 onClick={handleLike}
                 className={`flex items-center gap-1.5 transition-colors ${
                   liked ? "text-rose-400" : "text-slate-400"
@@ -182,12 +207,16 @@ export default function BlogCard({
               </div>
             </div>
 
-            <Link
-              href={`/blog2/${blogSlug(blog.title)}`}
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                router.push(`/blog/${blogSlug(blog.title)}`);
+              }}
               className="flex shrink-0 items-center gap-1.5 text-[10px] font-bold tracking-[0.12em] text-blue-300 uppercase transition-colors hover:text-white sm:text-xs"
             >
               Read more <span aria-hidden="true">→</span>
-            </Link>
+            </button>
           </div>
         </div>
       </div>

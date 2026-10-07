@@ -48,8 +48,16 @@ export default function BlogsClient() {
     const sorted = [...filtered];
 
     const parseDate = (date: string) => {
-      const [day, month, year] = date.split("-").map(Number);
-      return new Date(year, month - 1, day).getTime();
+      const normalized = date.trim().replace(/\//g, "-");
+      const match = /^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(normalized);
+
+      if (match) {
+        const [, day, month, year] = match;
+        return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+      }
+
+      const parsed = new Date(normalized);
+      return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
     };
 
     switch (sortBy) {

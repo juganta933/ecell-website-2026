@@ -5,7 +5,7 @@ import Navbar from "../../../components/Landing/Navbar";
 import Footer from "../../../components/Landing/Footer";
 import Background from "../../../components/Landing/Background";
 import BackButton from "../../../components/Blogs/BackButton";
-import BlogDetailClient from "./BlogDetailClient";
+import BlogDetailClient from "@/components/Blogs/BlogDetailClient";
 
 import blogsData from "@/data/blogs2.json";
 import { blogSlug } from "@/lib/utils";
@@ -98,7 +98,7 @@ export default async function BlogDetailPage({
   }
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden bg-[#020617] font-sans text-white selection:bg-blue-500/30">
+    <main className="relative min-h-screen overflow-x-clip bg-[#020617] font-sans text-white selection:bg-blue-500/30">
       <Background />
       <Navbar />
 

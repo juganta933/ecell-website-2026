@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-floating-promises, @typescript-eslint/no-unsafe-return */
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -17,6 +16,9 @@ interface ApiComment {
   createdAt: string;
 }
 
+type CommentsResponse = ApiComment[] | { data?: ApiComment[] | null };
+type NewCommentResponse = ApiComment | { data?: ApiComment | null };
+
 interface BlogCommentsProps {
   blogId: string;
 }
@@ -34,16 +36,17 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const { data } = await api.get(`/api/comment/apiComment/${blogId}`);
-        const commentsData = data.data ?? data ?? [];
-        setComments(Array.isArray(commentsData) ? commentsData : []);
+        const { data } = await api.get<CommentsResponse>(
+          `/api/comment/apiComment/${blogId}`,
+        );
+        setComments(Array.isArray(data) ? data : (data.data ?? []));
       } catch {
         setComments([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchComments();
+    void fetchComments();
   }, [blogId]);
 
   const handleSubmit = useCallback(
@@ -59,13 +62,19 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
 
       setSubmitting(true);
       try {
-        const { data } = await api.post(`/api/comment/apicomment/${blogId}`, {
-          text: comment,
-          commentAuthor: user?.name ?? "Anonymous",
-          commentPic: user?.picture ?? "https://i.pravatar.cc/150",
-          userId: String(user?.id ?? ""),
-        });
-        const newComment = data.data ?? data;
+        const { data } = await api.post<NewCommentResponse>(
+          `/api/comment/apicomment/${blogId}`,
+          {
+            text: comment,
+            commentAuthor: user?.name ?? "Anonymous",
+            commentPic: user?.picture ?? "https://i.pravatar.cc/150",
+            userId: String(user?.id ?? ""),
+          },
+        );
+        const newComment = "data" in data ? data.data : data;
+        if (!newComment) {
+          throw new Error("The server returned no comment");
+        }
         setComments((prev) => [newComment, ...prev]);
         setComment("");
         toast.success("Comment posted! 💬");
@@ -109,7 +118,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
   };
 
   return (
-    <div className="glass rounded-lg border border-white/10 p-4 backdrop-blur-md transition-[transform,border-color,box-shadow] duration-700 ease-out hover:-translate-y-0.5 hover:border-blue-400/20 hover:shadow-[0_16px_48px_-32px_rgba(37,99,235,0.35)] motion-reduce:transition-none sm:rounded-2xl sm:p-6 md:rounded-[2.5rem] md:p-10">
+    <div className="glass rounded-lg border border-white/10 p-4 backdrop-blur-md transition-[transform,border-color,box-shadow] duration-700 ease-out hover:-translate-y-0.5 hover:border-blue-400/20 hover:shadow-[0_16px_48px_-32px_rgba(37,99,235,0.35)] motion-reduce:transition-none sm:rounded-2xl sm:p-6 md:rounded-[2.5rem] md:p-10 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
       <div className="mb-3 flex items-center justify-between sm:mb-4 md:mb-8">
         <h4 className="flex items-center gap-2 text-[8px] font-black tracking-widest text-gray-500 uppercase sm:gap-3 sm:text-[9px] md:gap-3 md:text-[10px]">
           💬 Comments ({comments.length})
@@ -146,7 +155,7 @@ export default function BlogComments({ blogId }: BlogCommentsProps) {
 
       <div className="space-y-3 sm:space-y-4 md:space-y-6">
         {loading ? (
-          [...Array(2)].map((_, i) => (
+          [0, 1].map((i) => (
             <div
               key={i}
               className="h-20 animate-pulse rounded-lg bg-white/5 sm:h-24 md:h-28"

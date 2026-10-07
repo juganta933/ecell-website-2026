@@ -81,9 +81,18 @@ export default function BlogDetailClient({ slug }: { slug: string }) {
   if (!blog) return null;
 
   const formattedDate = (() => {
-    const [day, month, year] = blog.date.split("-").map(Number);
+    const normalized = blog.date.trim().replace(/\//g, "-");
+    const match = /^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(normalized);
 
-    return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    const parsedDate = match
+      ? new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]))
+      : new Date(normalized);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "Recently";
+    }
+
+    return parsedDate.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
